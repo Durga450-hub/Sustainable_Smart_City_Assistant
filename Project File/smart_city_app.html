@@ -1,0 +1,790 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sustainable Smart City Assistant</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .header h1 {
+            color: white;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 1.2em;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
+        }
+
+        .card h2 {
+            color: #4a5568;
+            margin-bottom: 20px;
+            font-size: 1.5em;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 10px;
+        }
+
+        .upload-area {
+            border: 2px dashed #667eea;
+            border-radius: 10px;
+            padding: 40px;
+            text-align: center;
+            margin-bottom: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .upload-area:hover {
+            border-color: #764ba2;
+            background: rgba(102, 126, 234, 0.1);
+        }
+
+        .upload-area.dragover {
+            background: rgba(102, 126, 234, 0.2);
+            border-color: #764ba2;
+        }
+
+        .file-input {
+            display: none;
+        }
+
+        .upload-icon {
+            font-size: 3em;
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+
+        .btn {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: all 0.3s ease;
+            margin: 5px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(45deg, #48bb78, #38a169);
+        }
+
+        .btn-danger {
+            background: linear-gradient(45deg, #f56565, #e53e3e);
+        }
+
+        .model-controls {
+            margin-bottom: 20px;
+        }
+
+        .input-group {
+            margin-bottom: 15px;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: #4a5568;
+        }
+
+        .input-group input, .input-group select {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 1em;
+            transition: border-color 0.3s ease;
+        }
+
+        .input-group input:focus, .input-group select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .results-area {
+            background: #f7fafc;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 20px;
+            display: none;
+        }
+
+        .results-area.active {
+            display: block;
+        }
+
+        .metric-card {
+            background: white;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .metric-value {
+            font-size: 2em;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .metric-label {
+            color: #718096;
+            font-size: 0.9em;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 10px;
+            background: #e2e8f0;
+            border-radius: 5px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        .image-preview {
+            max-width: 100%;
+            height: auto;
+            border-radius: 10px;
+            margin-top: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .status-indicator {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.8em;
+            font-weight: 600;
+            margin-left: 10px;
+        }
+
+        .status-success {
+            background: #c6f6d5;
+            color: #2f855a;
+        }
+
+        .status-error {
+            background: #fed7d7;
+            color: #c53030;
+        }
+
+        .status-processing {
+            background: #bee3f8;
+            color: #2b6cb0;
+        }
+
+        .analysis-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .feature-card {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-3px);
+        }
+
+        .feature-icon {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            color: #667eea;
+        }
+
+        .logs-area {
+            background: #1a202c;
+            color: #e2e8f0;
+            border-radius: 10px;
+            padding: 20px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            max-height: 300px;
+            overflow-y: auto;
+            margin-top: 20px;
+        }
+
+        .log-entry {
+            margin-bottom: 5px;
+            padding: 5px;
+            border-left: 3px solid #667eea;
+            padding-left: 10px;
+        }
+
+        .log-error {
+            border-left-color: #f56565;
+            color: #feb2b2;
+        }
+
+        .log-success {
+            border-left-color: #48bb78;
+            color: #9ae6b4;
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            
+            .header h1 {
+                font-size: 2em;
+            }
+            
+            .container {
+                padding: 10px;
+            }
+        }
+
+        .spinning {
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🌆 Sustainable Smart City Assistant</h1>
+            <p>AI-Powered Urban Analytics with IBM Granite LLM & CNN Models</p>
+        </div>
+
+        <div class="main-content">
+            <div class="card">
+                <h2>📸 Image Analysis</h2>
+                <div class="upload-area" id="uploadArea">
+                    <div class="upload-icon">📁</div>
+                    <p>Drag & drop images here or click to select</p>
+                    <input type="file" class="file-input" id="imageInput" accept="image/*" multiple>
+                </div>
+                <div id="imagePreview"></div>
+                <div class="model-controls">
+                    <div class="input-group">
+                        <label for="analysisType">Analysis Type:</label>
+                        <select id="analysisType">
+                            <option value="traffic">Traffic Flow Analysis</option>
+                            <option value="waste">Waste Management</option>
+                            <option value="energy">Energy Usage Detection</option>
+                            <option value="pollution">Air Quality Assessment</option>
+                            <option value="infrastructure">Infrastructure Health</option>
+                        </select>
+                    </div>
+                    <button class="btn" onclick="analyzeImage()">🔍 Analyze Image</button>
+                    <button class="btn btn-secondary" onclick="trainModel()">🤖 Train CNN Model</button>
+                </div>
+                <div class="results-area" id="analysisResults">
+                    <h3>Analysis Results</h3>
+                    <div id="analysisOutput"></div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>🧠 CNN Model Training</h2>
+                <div class="model-controls">
+                    <div class="input-group">
+                        <label for="modelType">Model Architecture:</label>
+                        <select id="modelType">
+                            <option value="basic">Basic CNN</option>
+                            <option value="resnet">ResNet-50</option>
+                            <option value="vgg">VGG-16</option>
+                            <option value="mobilenet">MobileNet</option>
+                        </select>
+                    </div>
+                    <div class="input-group">
+                        <label for="epochs">Training Epochs:</label>
+                        <input type="number" id="epochs" value="10" min="1" max="100">
+                    </div>
+                    <div class="input-group">
+                        <label for="batchSize">Batch Size:</label>
+                        <input type="number" id="batchSize" value="32" min="1" max="128">
+                    </div>
+                    <div class="input-group">
+                        <label for="learningRate">Learning Rate:</label>
+                        <input type="number" id="learningRate" value="0.001" step="0.0001" min="0.0001" max="0.1">
+                    </div>
+                    <button class="btn" onclick="generateModel()">🏗️ Generate Model</button>
+                    <button class="btn btn-secondary" onclick="loadPretrainedModel()">📦 Load Pretrained</button>
+                    <button class="btn btn-danger" onclick="stopTraining()">⏹️ Stop Training</button>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="trainingProgress"></div>
+                </div>
+                <div class="results-area" id="trainingResults">
+                    <h3>Training Metrics</h3>
+                    <div class="analysis-grid" id="metricsGrid"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>🏙️ Smart City Features</h2>
+            <div class="analysis-grid">
+                <div class="feature-card" onclick="runFeature('traffic')">
+                    <div class="feature-icon">🚦</div>
+                    <h3>Traffic Optimization</h3>
+                    <p>AI-powered traffic flow analysis and optimization</p>
+                </div>
+                <div class="feature-card" onclick="runFeature('waste')">
+                    <div class="feature-icon">♻️</div>
+                    <h3>Waste Management</h3>
+                    <p>Smart waste detection and route optimization</p>
+                </div>
+                <div class="feature-card" onclick="runFeature('energy')">
+                    <div class="feature-icon">⚡</div>
+                    <h3>Energy Efficiency</h3>
+                    <p>Building energy consumption analysis</p>
+                </div>
+                <div class="feature-card" onclick="runFeature('pollution')">
+                    <div class="feature-icon">🌱</div>
+                    <h3>Air Quality</h3>
+                    <p>Environmental monitoring and prediction</p>
+                </div>
+                <div class="feature-card" onclick="runFeature('infrastructure')">
+                    <div class="feature-icon">🏗️</div>
+                    <h3>Infrastructure Health</h3>
+                    <p>Structural integrity assessment</p>
+                </div>
+                <div class="feature-card" onclick="runFeature('sustainability')">
+                    <div class="feature-icon">🌍</div>
+                    <h3>Sustainability Metrics</h3>
+                    <p>Carbon footprint and sustainability tracking</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>📊 System Status & Logs</h2>
+            <div class="analysis-grid">
+                <div class="metric-card">
+                    <div class="metric-value" id="modelAccuracy">0.00%</div>
+                    <div class="metric-label">Model Accuracy</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value" id="processingTime">0.0s</div>
+                    <div class="metric-label">Processing Time</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value" id="imagesProcessed">0</div>
+                    <div class="metric-label">Images Processed</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value" id="modelStatus">Ready</div>
+                    <div class="metric-label">Model Status</div>
+                </div>
+            </div>
+            <div class="logs-area" id="systemLogs">
+                <div class="log-entry">System initialized successfully</div>
+                <div class="log-entry">CNN models loaded and ready</div>
+                <div class="log-entry">IBM Granite LLM connected</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Global variables
+        let currentModel = null;
+        let isTraining = false;
+        let trainingProgress = 0;
+        let processedImages = 0;
+
+        // File upload handling
+        const uploadArea = document.getElementById('uploadArea');
+        const fileInput = document.getElementById('imageInput');
+        const imagePreview = document.getElementById('imagePreview');
+
+        uploadArea.addEventListener('click', () => fileInput.click());
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.classList.add('dragover');
+        });
+        uploadArea.addEventListener('dragleave', () => {
+            uploadArea.classList.remove('dragover');
+        });
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.classList.remove('dragover');
+            handleFiles(e.dataTransfer.files);
+        });
+
+        fileInput.addEventListener('change', (e) => {
+            handleFiles(e.target.files);
+        });
+
+        function handleFiles(files) {
+            imagePreview.innerHTML = '';
+            Array.from(files).forEach(file => {
+                if (file.type.startsWith('image/')) {
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        const img = document.createElement('img');
+                        img.src = e.target.result;
+                        img.className = 'image-preview fade-in';
+                        imagePreview.appendChild(img);
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+        }
+
+        // CNN Model Generation
+        function generateModel() {
+            const modelType = document.getElementById('modelType').value;
+            const epochs = document.getElementById('epochs').value;
+            const batchSize = document.getElementById('batchSize').value;
+            const learningRate = document.getElementById('learningRate').value;
+
+            addLog(`Generating ${modelType} model with ${epochs} epochs...`, 'info');
+            
+            // Simulate model generation
+            setTimeout(() => {
+                const modelCode = generateModelCode(modelType, epochs, batchSize, learningRate);
+                addLog('Model architecture generated successfully', 'success');
+                updateModelStatus('Generated');
+                
+                // Display model code (simulated)
+                console.log('Generated Model Code:', modelCode);
+            }, 2000);
+        }
+
+        function generateModelCode(modelType, epochs, batchSize, learningRate) {
+            return `
+import tensorflow as tf
+from tensorflow.keras import layers, models
+import numpy as np
+
+def create_${modelType}_model():
+    model = models.Sequential([
+        layers.Conv2D(32, (3, 3), activation='relu', input_shape=(224, 224, 3)),
+        layers.MaxPooling2D((2, 2)),
+        layers.Conv2D(64, (3, 3), activation='relu'),
+        layers.MaxPooling2D((2, 2)),
+        layers.Conv2D(128, (3, 3), activation='relu'),
+        layers.MaxPooling2D((2, 2)),
+        layers.Flatten(),
+        layers.Dense(128, activation='relu'),
+        layers.Dropout(0.5),
+        layers.Dense(10, activation='softmax')
+    ])
+    
+    model.compile(
+        optimizer=tf.keras.optimizers.Adam(learning_rate=${learningRate}),
+        loss='categorical_crossentropy',
+        metrics=['accuracy']
+    )
+    
+    return model
+
+# Model training configuration
+EPOCHS = ${epochs}
+BATCH_SIZE = ${batchSize}
+LEARNING_RATE = ${learningRate}
+            `;
+        }
+
+        function trainModel() {
+            if (isTraining) return;
+            
+            isTraining = true;
+            trainingProgress = 0;
+            addLog('Starting model training...', 'info');
+            updateModelStatus('Training');
+            
+            // Simulate training progress
+            const trainingInterval = setInterval(() => {
+                trainingProgress += Math.random() * 10;
+                if (trainingProgress >= 100) {
+                    trainingProgress = 100;
+                    clearInterval(trainingInterval);
+                    isTraining = false;
+                    addLog('Model training completed successfully', 'success');
+                    updateModelStatus('Trained');
+                    updateTrainingMetrics();
+                }
+                
+                document.getElementById('trainingProgress').style.width = trainingProgress + '%';
+                addLog(`Training progress: ${trainingProgress.toFixed(1)}%`, 'info');
+            }, 500);
+        }
+
+        function stopTraining() {
+            if (isTraining) {
+                isTraining = false;
+                addLog('Training stopped by user', 'error');
+                updateModelStatus('Stopped');
+            }
+        }
+
+        function loadPretrainedModel() {
+            addLog('Loading pretrained model...', 'info');
+            setTimeout(() => {
+                addLog('Pretrained model loaded successfully', 'success');
+                updateModelStatus('Loaded');
+                updateModelAccuracy(92.5);
+            }, 1500);
+        }
+
+        // Image Analysis
+        function analyzeImage() {
+            const analysisType = document.getElementById('analysisType').value;
+            const images = document.querySelectorAll('.image-preview');
+            
+            if (images.length === 0) {
+                addLog('No images to analyze', 'error');
+                return;
+            }
+            
+            addLog(`Starting ${analysisType} analysis...`, 'info');
+            updateModelStatus('Analyzing');
+            
+            // Simulate analysis
+            setTimeout(() => {
+                const results = performAnalysis(analysisType);
+                displayAnalysisResults(results);
+                processedImages += images.length;
+                updateProcessedImages();
+                addLog(`Analysis completed: ${results.summary}`, 'success');
+                updateModelStatus('Ready');
+            }, 3000);
+        }
+
+        function performAnalysis(type) {
+            const analyses = {
+                traffic: {
+                    summary: 'Traffic congestion detected in 3 areas',
+                    details: [
+                        'Vehicle count: 47 vehicles detected',
+                        'Average speed: 12.3 km/h',
+                        'Congestion level: High',
+                        'Recommended action: Adjust traffic light timing'
+                    ]
+                },
+                waste: {
+                    summary: 'Waste containers at 78% capacity',
+                    details: [
+                        'Full containers: 5 out of 12',
+                        'Recyclable materials: 34% of total',
+                        'Collection priority: High',
+                        'Route optimization: 23% efficiency gain possible'
+                    ]
+                },
+                energy: {
+                    summary: 'Energy efficiency score: 76%',
+                    details: [
+                        'Peak consumption: 2.3 MW',
+                        'Renewable energy: 45% of total',
+                        'Inefficient buildings: 8 identified',
+                        'Potential savings: 15% annually'
+                    ]
+                },
+                pollution: {
+                    summary: 'Air quality index: 68 (Moderate)',
+                    details: [
+                        'PM2.5 levels: 28 μg/m³',
+                        'NO2 concentration: 42 ppb',
+                        'Pollution hotspots: 3 identified',
+                        'Improvement trend: +8% this month'
+                    ]
+                },
+                infrastructure: {
+                    summary: 'Structural integrity: 89% overall',
+                    details: [
+                        'Cracks detected: 12 minor, 2 moderate',
+                        'Maintenance required: 6 locations',
+                        'Safety score: 8.9/10',
+                        'Next inspection: Due in 3 months'
+                    ]
+                }
+            };
+            
+            return analyses[type] || analyses.traffic;
+        }
+
+        function displayAnalysisResults(results) {
+            const resultsArea = document.getElementById('analysisResults');
+            const outputDiv = document.getElementById('analysisOutput');
+            
+            outputDiv.innerHTML = `
+                <div class="metric-card">
+                    <h4>${results.summary}</h4>
+                    ${results.details.map(detail => `<p>• ${detail}</p>`).join('')}
+                </div>
+            `;
+            
+            resultsArea.classList.add('active');
+            resultsArea.classList.add('fade-in');
+        }
+
+        // Smart City Features
+        function runFeature(featureType) {
+            addLog(`Running ${featureType} analysis...`, 'info');
+            
+            // Simulate feature execution
+            setTimeout(() => {
+                const insights = getFeatureInsights(featureType);
+                addLog(`${featureType} analysis completed: ${insights}`, 'success');
+            }, 2000);
+        }
+
+        function getFeatureInsights(type) {
+            const insights = {
+                traffic: 'Traffic flow optimized, reducing congestion by 23%',
+                waste: 'Waste collection route optimized, saving 15% fuel',
+                energy: 'Energy efficiency improved by 12% citywide',
+                pollution: 'Air quality monitoring active, 3 hotspots identified',
+                infrastructure: 'Infrastructure health assessment completed',
+                sustainability: 'Carbon footprint reduced by 8% this quarter'
+            };
+            
+            return insights[type] || 'Feature analysis completed';
+        }
+
+        // Utility Functions
+        function addLog(message, type = 'info') {
+            const logsArea = document.getElementById('systemLogs');
+            const logEntry = document.createElement('div');
+            logEntry.className = `log-entry ${type === 'error' ? 'log-error' : type === 'success' ? 'log-success' : ''}`;
+            logEntry.textContent = `${new Date().toLocaleTimeString()} - ${message}`;
+            logsArea.appendChild(logEntry);
+            logsArea.scrollTop = logsArea.scrollHeight;
+        }
+
+        function updateModelStatus(status) {
+            document.getElementById('modelStatus').textContent = status;
+        }
+
+        function updateModelAccuracy(accuracy) {
+            document.getElementById('modelAccuracy').textContent = accuracy.toFixed(1) + '%';
+        }
+
+        function updateProcessedImages() {
+            document.getElementById('imagesProcessed').textContent = processedImages;
+        }
+
+        function updateTrainingMetrics() {
+            const metricsGrid = document.getElementById('metricsGrid');
+            metricsGrid.innerHTML = `
+                <div class="metric-card">
+                    <div class="metric-value">94.2%</div>
+                    <div class="metric-label">Training Accuracy</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value">91.8%</div>
+                    <div class="metric-label">Validation Accuracy</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value">0.23</div>
+                    <div class="metric-label">Loss</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value">45m</div>
+                    <div class="metric-label">Training Time</div>
+                </div>
+            `;
+            
+            const trainingResults = document.getElementById('trainingResults');
+            trainingResults.classList.add('active');
+            trainingResults.classList.add('fade-in');
+        }
+
+        // Update processing time periodically
+        setInterval(() => {
+            const randomTime = (Math.random() * 2 + 0.5).toFixed(1);
+            document.getElementById('processingTime').textContent = randomTime + 's';
+        }, 3000);
+
+        // Initialize the application
+        document.addEventListener('DOMContentLoaded', () => {
+            addLog('Sustainable Smart City Assistant initialized', 'success');
+            addLog('All systems ready for operation', 'info');
+        });
+    </script>
+</body>
+</html>
